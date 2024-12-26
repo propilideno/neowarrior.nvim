@@ -923,7 +923,7 @@ function NeoWarrior:delete()
   end
 
   local task = self.tw:task(uuid)
-  local choice = vim.fn.confirm("Are you sure you want to delete this task\n[" .. task.description .. "]\n", "Yes\nNo", 1, "question")
+  local choice = vim.fn.confirm("Are you sure you want to delete this task?\n[" .. task.description .. "]\n", "Yes\nNo", 1, "question")
 
   if choice == 1 then
     self.tw:delete(task)
