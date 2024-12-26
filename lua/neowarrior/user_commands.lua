@@ -25,6 +25,11 @@ return {
   },
 
   {
+    cmd = "Delete",
+    callback = function(nw) nw:delete() end,
+  },
+
+  {
     cmd = "Done",
     callback = function(nw) nw:mark_done() end,
   },

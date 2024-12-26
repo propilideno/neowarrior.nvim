@@ -309,6 +309,7 @@ return {
   keys = {
     help = '?', --- Show help
     add = 'a', --- Add task
+    delete = 'x', --- Delete task
     done = 'd', --- Mark task as done
     start = 'S', --- Start task
     select_dependency = 'Md', --- Select dependency

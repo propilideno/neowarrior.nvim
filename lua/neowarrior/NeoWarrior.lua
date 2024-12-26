@@ -68,6 +68,7 @@ local DateTimePicker = require('neowarrior.DateTimePicker')
 ---@field public get_config_value fun(self: NeoWarrior, key: string): any
 ---@field public show fun(self: NeoWarrior)
 ---@field public add fun(self: NeoWarrior)
+---@field public delete fun(self: NeoWarrior): NeoWarrior|nil
 ---@field public mark_done fun(self: NeoWarrior): NeoWarrior|nil
 ---@field public create_user_commands fun(self: NeoWarrior)
 ---@field public set_keymaps fun(self: NeoWarrior)
@@ -136,15 +137,16 @@ function NeoWarrior:new()
         name = "Task actions",
         keys = {
           { key = 'add', sort = 10, desc = 'Add task' },
-          { key = 'enter', sort = 11, desc = 'Show task/Activate line action' },
-          { key = 'back', sort = 12, desc = 'Back' },
-          { key = 'done', sort = 13, desc = 'Mark task done' },
-          { key = 'start', sort = 14, desc = 'Start task' },
-          { key = 'modify', sort = 15, desc = 'Modify task' },
-          { key = 'modify_select_project', sort = 16, desc = 'Modify project' },
-          { key = 'modify_select_priority', sort = 17, desc = 'Modify priority' },
-          { key = 'modify_due', sort = 18, desc = 'Modify due date' },
-          { key = 'select_dependency', sort = 19, desc = 'Select dependency' },
+          { key = 'delete', sort = 11, desc = 'Delete task' },
+          { key = 'enter', sort = 12, desc = 'Show task/Activate line action' },
+          { key = 'back', sort = 13, desc = 'Back' },
+          { key = 'done', sort = 14, desc = 'Mark task done' },
+          { key = 'start', sort = 15, desc = 'Start task' },
+          { key = 'modify', sort = 16, desc = 'Modify task' },
+          { key = 'modify_select_project', sort = 17, desc = 'Modify project' },
+          { key = 'modify_select_priority', sort = 18, desc = 'Modify priority' },
+          { key = 'modify_due', sort = 19, desc = 'Modify due date' },
+          { key = 'select_dependency', sort = 20, desc = 'Select dependency' },
         },
       },
 
@@ -906,6 +908,40 @@ function NeoWarrior:mark_done()
   return self
 end
 
+--- Delete task
+---@return self|nil
+function NeoWarrior:delete()
+
+  self:close_floats()
+  self.buffer:save_cursor()
+  local uuid = self.buffer:get_meta_data('uuid')
+  if not uuid and self.current_task then
+    uuid = self.current_task.uuid
+  end
+  if not uuid then
+    return nil
+  end
+
+  local task = self.tw:task(uuid)
+  local choice = vim.fn.confirm("Are you sure you want to delete this task\n[" .. task.description .. "]\n", "Yes\nNo", 1, "question")
+
+  if choice == 1 then
+    self.tw:delete(task)
+    self:refresh()
+  end
+
+  if self.current_task then
+    self:task(self.current_task.uuid)
+  else
+    self:list()
+  end
+
+  self.buffer:restore_cursor()
+
+  return self
+end
+
+
 --- Create user commands
 function NeoWarrior:create_user_commands()
 
@@ -935,6 +971,13 @@ function NeoWarrior:set_keymaps()
   if self.config.keys.add then
     vim.keymap.set("n", self.config.keys.add, function()
       self:add()
+    end, default_keymap_opts)
+  end
+
+  -- Delete task
+  if self.config.keys.delete then
+    vim.keymap.set("n", self.config.keys.delete, function()
+      self:delete()
     end, default_keymap_opts)
   end
 

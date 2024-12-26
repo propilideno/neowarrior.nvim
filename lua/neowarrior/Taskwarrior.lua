@@ -127,10 +127,9 @@ function Taskwarrior:undone(task)
 end
 
 --- Delete task
---- TODO: make this work
 ---@param task Task 
 function Taskwarrior:delete(task)
-  vim.fn.confirm("Use CLI to delete task\n[" .. task.description .. "]", "OK")
+  self:syscall({ "task", "delete", task.uuid, "rc.confirmation=off" })
 end
 
 return Taskwarrior

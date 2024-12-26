@@ -129,6 +129,7 @@ require('neowarrior').focus()
 | q | Close NeoWarrior/Close help |
 | - | - |
 | a | Add task |
+| x | Delete task |
 | l | Show task/Activate line action |
 | h | Back |
 | d | Mark task done |
